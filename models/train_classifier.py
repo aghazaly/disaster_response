@@ -11,8 +11,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import GridSearchCV
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 import nltk
-nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
+nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger', 'stopwords'])
 
 def load_data(database_filepath):
     # load data from database
@@ -24,7 +25,12 @@ def load_data(database_filepath):
     return X, y
 
 def tokenize(text):
-    pass
+    text = re.sub("[^a-zA-Z0-9]", " ", X[0][0]) #retain alphanumeric only
+    tokens = word_tokenize(text) #like split but it takes care of punctuation, hasthags, tweethandlers
+    tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens]#reduce words to their source (plurals)
+    tokens = [WordNetLemmatizer().lemmatize(word, pos='v') for word in tokens]#reduce words to their source (verbs)
+
+    return tokens
 
 
 def build_model():
