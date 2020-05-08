@@ -25,6 +25,7 @@ def load_data(database_filepath):
     return X, y
 
 def tokenize(text):
+    
     text = re.sub("[^a-zA-Z0-9]", " ", X[0][0]) #retain alphanumeric only
     tokens = word_tokenize(text) #like split but it takes care of punctuation, hasthags, tweethandlers
     tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens]#reduce words to their source (plurals)
@@ -34,7 +35,38 @@ def tokenize(text):
 
 
 def build_model():
-    pass
+
+    pipeline = Pipeline([
+        ('features', FeatureUnion([
+
+            ('text_pipeline', Pipeline([
+                ('vect', CountVectorizer(tokenizer=tokenize)),
+                ('tfidf', TfidfTransformer())
+            ])),
+
+            ('starting_verb', StartingVerbExtractor())
+        ])),
+
+        ('clf', RandomForestClassifier())
+    ])
+
+    parameters = {
+        'features__text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
+        'features__text_pipeline__vect__max_df': (0.5, 0.75, 1.0),
+        'features__text_pipeline__vect__max_features': (None, 5000, 10000),
+        'features__text_pipeline__tfidf__use_idf': (True, False),
+        'clf__n_estimators': [50, 100, 200],
+        'clf__min_samples_split': [2, 3, 4],
+        'features__transformer_weights': (
+            {'text_pipeline': 1, 'starting_verb': 0.5},
+            {'text_pipeline': 0.5, 'starting_verb': 1},
+            {'text_pipeline': 0.8, 'starting_verb': 1},
+        )
+    }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
