@@ -1,9 +1,27 @@
 import sys
-
+import re
+import pandas as pd
+from sqlalchemy import create_engine
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.model_selection import GridSearchCV
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+import nltk
+nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
 
 def load_data(database_filepath):
-    pass
+    # load data from database
+    engine = create_engine('sqlite:///InsertDatabaseName.db')
+    df = pd.read_sql_table('InsertTableName', engine)
+    X = df['message'].values
+    y = df.iloc[:,4:].values
 
+    return X, y
 
 def tokenize(text):
     pass
