@@ -2,7 +2,7 @@ import sys
 import re
 import numpy as np
 import pandas as pd
-import joblib
+import pickle
 from sqlalchemy import create_engine
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.metrics import confusion_matrix
@@ -42,7 +42,7 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(max_depth=5)))
     ])
 
     parameters = {
@@ -51,7 +51,7 @@ def build_model():
         # 'features__text_pipeline__vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
         'clf__estimator__n_estimators': [20, 30, 40],
-        'clf__estimator__min_samples_split': [2, 3]
+        # 'clf__estimator__min_samples_split': [2, 3]
     }
 
     cv = GridSearchCV(pipeline, param_grid=parameters)
@@ -71,7 +71,8 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    joblib.dump(model, model_filepath)
+    with open(model_filepath, 'wb') as f:
+        pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
 
 
 def main():
