@@ -61,9 +61,10 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    y_pred = mode.predict(X_test)
     labels = np.unique(y_pred)
     confusion_mat = confusion_matrix(y_test, y_pred, labels=labels)
-    accuracy = (y_pred == y_test).mean()
+    accuracy = (y_pred == Y_test).mean()
 
     print("Labels:", labels)
     print("Confusion Matrix:\n", confusion_mat)
