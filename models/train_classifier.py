@@ -51,7 +51,7 @@ def build_model():
         # 'features__text_pipeline__vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
         'clf__estimator__n_estimators': [20, 30, 40],
-        'clf__estimator__min_samples__split': [2, 3],
+        'clf__estimator__min_samples_split': [2, 3],
         # 'clf__max_depth': [2, 3]
     }
 
@@ -61,7 +61,7 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    
+
     y_pred = model.predict(X_test)
     labels = np.unique(y_pred)
     accuracy = (y_pred == Y_test).mean()
