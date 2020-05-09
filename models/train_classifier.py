@@ -39,17 +39,6 @@ def tokenize(text):
 
 def build_model():
 
-    # pipeline = Pipeline([
-    #     ('features', FeatureUnion([
-
-    #         ('text_pipeline', Pipeline([
-    #             ('vect', CountVectorizer(tokenizer=tokenize)),
-    #             ('tfidf', TfidfTransformer())
-    #         ]))
-    #     ])),
-
-    #     ('clf', MultiOutputClassifier(RandomForestClassifier()))
-    # ])
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -62,7 +51,7 @@ def build_model():
         # 'features__text_pipeline__vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
         'clf__estimator__n_estimators': [20, 30, 40],
-        # 'clf__min_samples__split': [2, 3],
+        'clf__estimator__min_samples__split': [2, 3],
         # 'clf__max_depth': [2, 3]
     }
 
