@@ -1,8 +1,8 @@
 import sys
 import re
-import pickle
 import numpy as np
 import pandas as pd
+import joblib
 from sqlalchemy import create_engine
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.metrics import confusion_matrix
@@ -51,8 +51,7 @@ def build_model():
         # 'features__text_pipeline__vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
         'clf__estimator__n_estimators': [20, 30, 40],
-        'clf__estimator__min_samples_split': [2, 3],
-        # 'clf__max_depth': [2, 3]
+        'clf__estimator__min_samples_split': [2, 3]
     }
 
     cv = GridSearchCV(pipeline, param_grid=parameters)
@@ -72,8 +71,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    with open(model_filepath, 'wb') as f:
-        pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
+    joblib.dump(model, model_filepath)
 
 
 def main():
@@ -81,7 +79,6 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        # X, Y = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
