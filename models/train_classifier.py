@@ -61,15 +61,14 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    y_pred = mode.predict(X_test)
+    
+    y_pred = model.predict(X_test)
     labels = np.unique(y_pred)
-    confusion_mat = confusion_matrix(y_test, y_pred, labels=labels)
     accuracy = (y_pred == Y_test).mean()
 
     print("Labels:", labels)
-    print("Confusion Matrix:\n", confusion_mat)
     print("Accuracy:", accuracy)
-    print("\nBest Parameters:", cv.best_params_)
+    print("\nBest Parameters:", model.best_params_)
 
 
 def save_model(model, model_filepath):
