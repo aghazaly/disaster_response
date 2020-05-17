@@ -42,19 +42,18 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(max_depth=5)))
+        ('clf', MultiOutputClassifier(RandomForestClassifier())
     ])
 
     parameters = {
-        # 'features__text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
-        # 'features__text_pipeline__vect__max_df': (0.5, 0.75, 1.0),
-        # 'features__text_pipeline__vect__max_features': (None, 5000, 10000),
+        'vect__ngram_range': ((1, 1), (1, 2)),
+        'vect__max_df': (0.5, 0.75, 1.0),
+        'vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
-        'clf__estimator__n_estimators': [20, 30, 40],
-        # 'clf__estimator__min_samples_split': [2, 3]
+        'clf__estimator__n_estimators': [40, 50]
     }
 
-    cv = GridSearchCV(pipeline, param_grid=parameters)
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=6, verbose=100)
 
     return cv
 
@@ -99,8 +98,8 @@ def main():
     else:
         print('Please provide the filepath of the disaster messages database '\
               'as the first argument and the filepath of the pickle file to '\
-              'save the model to as the second argument. \n\nExample: python '\
-              'train_classifier.py ../data/DisasterResponse.db classifier.pkl')
+              'save the model to as the second argument. \n\nExample: '\
+              'python train_classifier.py ../data/DisasterResponse.db classifier.pickle ')
 
 
 if __name__ == '__main__':
