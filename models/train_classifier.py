@@ -13,7 +13,7 @@ from sklearn.model_selection import GridSearchCV
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import nltk
-nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger', 'stopwords'])
+# nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger', 'stopwords'])
 
 def load_data(database_filepath):
     """
@@ -32,7 +32,7 @@ def tokenize(text):
     Takes a string and returns a tokenized list
     """
 
-    text = re.sub("[^a-zA-Z0-9]", " ", text) #retain alphanumeric only
+    text = re.sub("[^a-zA-Z0-9]", " ", text.lower()) #retain alphanumeric only
     tokens = word_tokenize(text) #like split but it takes care of punctuation, hasthags, tweethandlers
     tokens = [WordNetLemmatizer().lemmatize(word) for word in tokens]#reduce words to their source (plurals)
     tokens = [WordNetLemmatizer().lemmatize(word, pos='v') for word in tokens]#reduce words to their source (verbs)
