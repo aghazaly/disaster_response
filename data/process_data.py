@@ -4,6 +4,9 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Loading data from csv
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, on=['id'], how='outer')
@@ -11,6 +14,9 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Takes a dataframe and returns a cleaned dataframe
+    """
     categories = df.categories.str.split(';', n=37, expand=True)
     row = categories.iloc[0].tolist()
     category_colnames = list(map(lambda x: x.split('-')[0], row))
@@ -29,9 +35,10 @@ def clean_data(df):
     return df
     
 
-
-
 def save_data(df, database_filename):
+    """
+    Saving dataframe into a sql table
+    """
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('DisasterResponse', engine, index=False)  
 
