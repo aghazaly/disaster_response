@@ -1,5 +1,7 @@
 import re
+import gzip
 import json
+import pickle
 import plotly
 import pandas as pd
 
@@ -9,7 +11,6 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
 
@@ -29,7 +30,8 @@ engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("../models/classifier_4.pickle")
+with gzip.open("../models/classifier.gz", 'rb') as f:
+    model = pickle.load(f)
 
 
 # index webpage displays cool visuals and receives user input text for model
