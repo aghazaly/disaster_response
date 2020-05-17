@@ -1,11 +1,10 @@
 import sys
 import re
+import pickle
 import numpy as np
 import pandas as pd
-import pickle
 from sqlalchemy import create_engine
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.metrics import confusion_matrix
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -19,15 +18,21 @@ import nltk
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger', 'stopwords'])
 
 def load_data(database_filepath):
+    """
+    Loading data from a database file
+    """
     # load data from database
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table('DisasterResponse', engine)
     X = df['message'].values
-    y = df.iloc[:,4:].values
+    y = df.iloc[:, 4:].values
     category_names = df.iloc[:,4:].columns.values
     return X, y, category_names
 
 def tokenize(text):
+    """
+    Takes a string and returns a tokenized list
+    """
 
     text = re.sub("[^a-zA-Z0-9]", " ", text) #retain alphanumeric only
     tokens = word_tokenize(text) #like split but it takes care of punctuation, hasthags, tweethandlers
@@ -38,12 +43,15 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Returns trained model given a pipeline of transformers and estimators
+    """
 
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier())
-    ])
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+        ])
 
     parameters = {
         'vect__ngram_range': ((1, 1), (1, 2)),
@@ -59,6 +67,9 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Printing Accuracy and Best Params
+    """
 
     y_pred = model.predict(X_test)
     labels = np.unique(y_pred)
@@ -70,6 +81,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    Saving trained model to a pickle file
+    """
     with open(model_filepath, 'wb') as f:
         pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
 
